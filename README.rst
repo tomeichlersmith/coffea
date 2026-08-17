@@ -69,7 +69,7 @@ Install coffea like any other Python package:
 
     pip install coffea
 
-or similar for your environment tooling (e.g. ``uv`` or ``pixi``).
+or similar for your environment tooling (e.g. ``uv pip install coffea`` or ``pixi add coffea``).
 For more details, see the `Installing coffea <https://coffea-hep.readthedocs.io/en/latest/getting_started/installation.html>`_ section of the documentation.
 
 Strict dependencies
