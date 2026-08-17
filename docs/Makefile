@@ -1,6 +1,6 @@
 html: source/modules
 	cd .. && sed -i.bak s/docs\\\/source\\\/// README.rst && cd docs
-	sphinx-build -M html source build
+	sphinx-build -M html --warning-file build/warnings --nitpicky source build
 	cd .. && mv README.rst.bak README.rst && cd docs
 
 source/modules: source/api_reference.md
