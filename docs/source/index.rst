@@ -21,4 +21,4 @@ Table of Contents
   api_reference.md
   contributing.md
 
-.. include:: README.rst
+.. include:: source-repo-readme.rst

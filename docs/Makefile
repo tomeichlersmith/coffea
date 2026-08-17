@@ -1,8 +1,5 @@
-html: source/modules source/README.rst
+html: source/modules
 	sphinx-build -M html --warning-file build/warnings --nitpicky source build
-
-source/README.rst: ../README.rst
-	cp ../README.rst source/README.rst
 
 source/modules: source/api_reference.md
 	sphinx-autogen source/api_reference.md -t source/_templates -o source/modules
