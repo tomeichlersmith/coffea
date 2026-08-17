@@ -1,7 +1,8 @@
-html: source/modules
-	cd .. && sed -i.bak s/docs\\\/source\\\/// README.rst && cd docs
+html: source/modules source/README.rst
 	sphinx-build -M html --warning-file build/warnings --nitpicky source build
-	cd .. && mv README.rst.bak README.rst && cd docs
+
+source/README.rst: ../README.rst
+	cp ../README.rst source/README.rst
 
 source/modules: source/api_reference.md
 	sphinx-autogen source/api_reference.md -t source/_templates -o source/modules
