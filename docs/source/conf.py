@@ -103,6 +103,8 @@ intersphinx_mapping = {
     "distributed": ("https://distributed.dask.org/en/latest/", None),
     "dask-awkward": ("https://dask-awkward.readthedocs.io/en/stable/", None),
     "vector": ("https://vector.readthedocs.io/en/latest/", None),
+    "hist": ("https://hist.readthedocs.io/en/latest/", None),
+    "correctionlib": ("https://cms-nanoaod.github.io/correctionlib/", None),
 }
 
 napoleon_preprocess_types = True
