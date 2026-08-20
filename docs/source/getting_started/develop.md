@@ -1,4 +1,4 @@
-# Develop Locally
+# Develop
 
 Below is a minimal processor that applies muon scale factors from `correctionlib` and produces a histogram.
 

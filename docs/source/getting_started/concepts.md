@@ -1,12 +1,4 @@
----
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
----
-
-# Coffea concepts
+# Concepts
 
 This page explains concepts and terminology used within the coffea package.
 It is intended to provide a high-level overview, while details can be found in other sections of the documentation.
