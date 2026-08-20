@@ -1,4 +1,4 @@
-# Scale out
+# Scale
 
 Scaling does not require modifying the processor. Replace the executor and, if needed, provide configuration for the backing service.
 
