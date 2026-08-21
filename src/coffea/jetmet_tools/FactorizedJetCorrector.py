@@ -54,9 +54,8 @@ class FactorizedJetCorrector:
     CMSSW and FWLite. It applies a series of JECs in ascending order as defined by
     '_level_order', and checks for the consistency of input corrections.
 
-    It implements the jet energy correction definition specified in the JEC TWiki_.
-
-    .. _TWiki: https://twiki.cern.ch/twiki/bin/view/CMS/JetEnergyScale
+    It implements the jet energy correction definition specified in the
+    `JEC TWiki <https://twiki.cern.ch/twiki/bin/view/CMS/JetEnergyScale>`_.
 
     You can use this class as follows::
 

@@ -35,9 +35,8 @@ class JetResolution:
     CMSSW and FWLite. It calculates the jet energy resolution for a corrected jet
     in a given binning.
 
-    It implements the jet energy correction definition specified in the JER TWiki_.
-
-    .. _TWiki: https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+    It implements the jet energy correction definition specified in the
+    `JER TWiki <https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution>`_.
 
     You can use this class as follows::
 

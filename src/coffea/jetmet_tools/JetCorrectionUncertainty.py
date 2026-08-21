@@ -57,9 +57,8 @@ class JetCorrectionUncertainty:
     CMSSW and FWLite. It calculates the jet energy scale uncertainty for a corrected jet
     in a given binning.
 
-    It implements the jet energy correction definition specified in the JES Uncertainty TWiki_.
-
-    .. _TWiki: https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
+    It implements the jet energy correction definition specified in the
+    `JES Uncertainty TWiki <https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources>`_.
 
     You can use this class as follows::
 
