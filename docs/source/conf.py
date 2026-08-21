@@ -49,7 +49,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.graphviz",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.linkcode",
+    # "sphinx.ext.linkcode",
     "sphinx.ext.napoleon",
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
@@ -65,7 +65,7 @@ copybutton_here_doc_delimiter = "EOF"
 numpydoc_show_class_members = False
 nbsphinx_execute = "never"
 autosummary_generate = True
-autosummary_imported_members = True
+autosummary_imported_members = False
 
 COFFEA_ROOT = Path(coffea.__file__).parent
 
@@ -103,12 +103,15 @@ intersphinx_mapping = {
     "distributed": ("https://distributed.dask.org/en/latest/", None),
     "dask-awkward": ("https://dask-awkward.readthedocs.io/en/stable/", None),
     "vector": ("https://vector.readthedocs.io/en/latest/", None),
+    "rich": ("https://rich.readthedocs.io/en/stable/", None),
 }
 
 napoleon_preprocess_types = True
 
 autodoc_type_aliases = {
     "awkward.Array": "ak.Array",
+    "Console": "rich.console.Console",
+    "coffea.processor.dask.WorkerPlugin": "dask.WorkerPlugin",
 }
 
 napoleon_type_aliases = {
@@ -119,6 +122,8 @@ napoleon_type_aliases = {
     "dask_awkward.Array": ":class:`dask_awkward.Array <dask_awkward.Array>`",
     "dask_awkward.Record": ":class:`dask_awkward.Record <dask_awkward.Record>`",
     "dask_awkward.Scalar": ":class:`dask_awkward.Scalar <dask_awkward.Scalar>`",
+    "Console": ":class:`rich.console.Console`",
+    "coffea.processor.dask.WorkerPlugin": ":class:`dask.WorkerPlugin`",
 }
 
 # The master toctree document.
