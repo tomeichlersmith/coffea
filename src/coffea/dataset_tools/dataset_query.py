@@ -33,11 +33,12 @@ def print_dataset_query(
     ----------
         query : str
             The query given to rucio
-        dataset_list : dict[str, dict[str, list[str]]]
-            The second output of a call to query_dataset with tree=True
-        console : Console
-            A Console object to print to
-        selected : list[str], default []
+        dataset_list : dict of str to dict of str to list of str
+            The second output of a call to :py:func:`~coffea.dataset_tools.rucio_utils.query_dataset` with ``tree=True``
+            which, more specifically, returns a ``dict[str,dict[str,list[str]]]``
+        console : rich.console.Console, default :py:obj:`~coffea.util.coffea_console`
+            A :class:`~rich.console.Console` object to print to
+        selected : list of str, default ``[]``
             A list of selected datasets
     """
     table = Table(title=f"Query: [bold red]{query}")

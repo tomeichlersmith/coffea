@@ -214,7 +214,7 @@ class SpeedColumn(ProgressColumn):
 
 
 coffea_console = Console()
-coffea_console.__doc__ += """
+"""
 \nA `rich.console.Console` for coffea. Used throughout coffea for consistent logging and
 progress bars. May be used by users for their own logging. Using the same console
 ensures that output is nicely integrated with coffea's progress bars.
@@ -222,6 +222,7 @@ ensures that output is nicely integrated with coffea's progress bars.
 
 
 def rich_bar():
+    """construct a coffea-style `rich.progress.Progress`"""
     return Progress(
         TextColumn("[bold blue]{task.description}", justify="right"),
         "[progress.percentage]{task.percentage:>3.0f}%",
