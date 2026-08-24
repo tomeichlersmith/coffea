@@ -106,6 +106,7 @@ intersphinx_mapping = {
     "hist": ("https://hist.readthedocs.io/en/latest/", None),
     "correctionlib": ("https://cms-nanoaod.github.io/correctionlib/", None),
     "rich": ("https://rich.readthedocs.io/en/stable/", None),
+    "pandas": ("https://pandas.pydata.org/docs/", None),
 }
 
 napoleon_preprocess_types = True
