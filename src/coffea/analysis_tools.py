@@ -1136,15 +1136,12 @@ class NminusOne:
             weighted : bool, optional
                 Whether to fill the histograms with weights. Default is None, which applies the weights
                 if the nminusone was instantiated with weights and unweighted statistics otherwise.
-            categorical : dict, optional
-                A dictionary with the following keys:
+            categorical : dict or None, optional
+                A dictionary with the following keys with three keys defining the categorical histogram.
 
-                    axis : hist.axis object
-                        The axis to be used as a categorical axis
-                    values : list
-                        The array to be filled in the categorical axis, must be the same length as the masks
-                    labels : list
-                        The labels corresponding to the values in the categorical axis
+                * ``"axis"`` is a `hist.axis` to be used as the categorical axis
+                * ``"values"`` is a `list` that is to be filled in the categorical axis and must be the same length the masks
+                * ``"labels"`` is a `list` of `str` corresponding to the values in the categorical axis.
 
                 Default is None, which does not apply any categorical axis.
 
@@ -1270,22 +1267,22 @@ class NminusOne:
                 A dictionary in the form ``{name: array}`` where ``name`` is the name of the variable,
                 and ``array`` is the corresponding array of values.
                 The arrays must be the same length as each mask of the N-1 selection.
-            axes : list of hist.axis objects, optional
+            axes : list of hist.axis, optional
                 The axes objects to histogram the variables on. This will override all the following arguments that define axes.
                 Must be the same length as ``vars``.
-            bins : iterable of integers or Nones, optional
+            bins : list of int or None, optional
                 The number of bins for each variable histogram. If not specified, it defaults to 20.
                 Must be the same length as ``vars``.
-            start : iterable of floats or integers or Nones, optional
+            start : list of float or int or None, optional
                 The lower edge of the first bin for each variable histogram. If not specified, it defaults to the minimum value of the variable array.
                 Must be the same length as ``vars``.
-            stop : iterable of floats or integers or Nones, optional
+            stop : list of float or int or None, optional
                 The upper edge of the last bin for each variable histogram. If not specified, it defaults to the maximum value of the variable array.
                 Must be the same length as ``vars``.
-            edges : list of iterables of floats or integers, optional
+            edges : list of list of float or int, optional
                 The bin edges for each variable histogram. This overrides ``bins``, ``start``, and ``stop`` if specified.
                 Must be the same length as ``vars``.
-            transform : iterable of hist.axis.transform objects or Nones, optional
+            transform : list of hist.axis.transform or None, optional
                 The transforms to apply to each variable histogram axis. If not specified, it defaults to None.
                 Must be the same length as ``vars``.
             weighted : bool, optional
@@ -1293,27 +1290,25 @@ class NminusOne:
                 if the nminusone was instantiated with weights and unweighted distributions otherwise.
             scale : float, optional
                 A scalar value by which all weights will be scaled, works with both weighted and unweighted methods.
-            categorical : dict, optional
-                A dictionary with the following keys:
+            categorical : dict or None, optional
+                A dictionary with the following keys with three keys defining the categorical histogram.
 
-                    axis : hist.axis object
-                        The axis to be used as a categorical axis
-                    values : list
-                        The array to be filled in the categorical axis, must be the same length as the masks
-                    labels : list
-                        The labels corresponding to the values in the categorical axis
+                * ``"axis"`` is a `hist.axis` to be used as the categorical axis
+                * ``"values"`` is a `list` that is to be filled in the categorical axis and must be the same length the masks
+                * ``"labels"`` is a `list` of `str` corresponding to the values in the categorical axis.
 
                 Default is None, which does not apply any categorical axis.
 
         Returns
         -------
-            hists : list of hist.Hist or hist.dask.Hist objects
+            hists : list of hist.Hist or hist.dask.Hist
                 A list of 2D histograms of the variables for each step of the N-1 selection.
                 The first axis is the variable, the second axis is the N-1 selection step.
-            labels : list of strings
+            labels : list of str
                 The bin labels of y axis of the histogram.
-            catlabels : list of strings, optional
+            catlabels : list of str, optional
                 The labels of the categorical axis
+                Only included if using axis defined with ``categorical`` input
         """
         do_weighted = self._weighted if weighted is None else weighted
         do_categorical = categorical is not None
