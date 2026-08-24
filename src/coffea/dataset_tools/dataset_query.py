@@ -17,6 +17,8 @@ from coffea.util import _import_distributed, coffea_console
 from . import rucio_utils
 from .preprocess import preprocess
 
+__all__ = ["print_dataset_query", "get_indices_query", "DataDiscoveryCLI"]
+
 
 def print_dataset_query(
     query: str,
