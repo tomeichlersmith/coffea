@@ -12,6 +12,8 @@ _distributed = _import_distributed()
 WorkerPlugin = _distributed.WorkerPlugin
 get_worker = _distributed.get_worker
 
+__all__ = ["ColumnCache", "register_columncache"]
+
 
 class ColumnCache(WorkerPlugin, MutableMapping):
     """dask worker plugin to cache columns of data"""
