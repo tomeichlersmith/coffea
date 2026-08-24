@@ -105,12 +105,14 @@ intersphinx_mapping = {
     "vector": ("https://vector.readthedocs.io/en/latest/", None),
     "hist": ("https://hist.readthedocs.io/en/latest/", None),
     "correctionlib": ("https://cms-nanoaod.github.io/correctionlib/", None),
+    "rich": ("https://rich.readthedocs.io/en/stable/", None),
 }
 
 napoleon_preprocess_types = True
 
 autodoc_type_aliases = {
     "awkward.Array": "ak.Array",
+    "Console": "rich.console.Console",
 }
 
 napoleon_type_aliases = {
