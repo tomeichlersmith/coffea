@@ -23,9 +23,12 @@ if TYPE_CHECKING:
         list[dask.base.DaskMethodsMixin],
         tuple[dask.base.DaskMethodsMixin],
     ]
+    """short-hand for types we can output from an analysis"""
     # NOTE TO USERS: You can use nested python containers as arguments to dask.compute!
     DaskOutputType = Union[DaskOutputBaseType, tuple[DaskOutputBaseType, ...]]
+    """short-hand for outputs of an analysis (one or more `DaskOutputBaseType`)"""
     GenericHEPAnalysis = Callable[[dask_awkward.Array], DaskOutputType]
+    """short-hand for a function that injests a `dask_awkard.Array` and outputs `DaskOutputType`"""
 
 
 def apply_to_dataset(
@@ -40,16 +43,19 @@ def apply_to_dataset(
 
     Parameters
     ----------
-        data_manipulation : ProcessorABC or GenericHEPAnalysis
+        data_manipulation : coffea.processor.ProcessorABC
             The user analysis code to run on the input dataset
-        dataset : DatasetSpec | dict
+        dataset : DatasetSpec or dict
             The data to be acted upon by the data manipulation passed in.
-        schemaclass : BaseSchema, default NanoAODSchema
+        schemaclass : coffea.nanoevents.BaseSchema, default coffea.nanoevents.NanoAODSchema
             The nanoevents schema to interpret the input dataset with.
-        metadata : dict[Hashable, Any], default {}
+        metadata : dict, default {}
             Metadata for the dataset that is accessible by the input analysis. Should also be dask-serializable.
-        uproot_options : dict[str, Any], default {}
-            Options to pass to uproot. Pass at least {"allow_read_errors_with_report": True} to turn on file access reports.
+            The keys just have to be hashable while the values can be any time.
+        uproot_options : dict, default {}
+            Options to pass to uproot. Pass at least
+            ``{"allow_read_errors_with_report": True}`` to turn on file access reports.
+            Since this dict is turned into keyword arguments, the keys have to be `str`.
 
     Returns
     -------
