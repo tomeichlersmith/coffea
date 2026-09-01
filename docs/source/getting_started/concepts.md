@@ -25,6 +25,32 @@ extending array programming capabilities to the complexity of HEP data.
 :align: center
 :::
 
+### Array Broadcasting
+While in the "event loop" method for analyzing HEP data follows an "imperative" design pattern where
+you are expected to describe not only _what_ you want to do but also _how_ the computer should do it,
+array programming in the scientific python ecosystem has evolved into a more "declarative" design
+pattern.
+This means that the functions you use are meant to simply declare what you want to calculate while
+leaving the difficult complexities of how to calculate to the implementation of the functions within
+the libraries (like ``numpy`` and ``awkward``).
+
+For example, both ``numpy`` and ``awkward`` hide Python's inefficient ``for`` loop inside
+of (compiled) functions and represent those functions with the normal operations.
+```python
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+a + b # [5, 7, 9]
+```
+Writing code that respects this hidden implementation is difficult and a different
+thought pattern compared to "imperative" coding where you write a ``for`` loop when
+you want to loop over some list of data.
+I highly recommend looking at the [What is NumPy?](https://numpy.org/doc/stable/user/whatisnumpy.html#whatisnumpy)
+and [NumPy Basics](https://numpy.org/doc/stable/user/absolute_beginners.html) pages for
+help learning more about this array programming. ``awkward`` and the HEP-specializations
+of this array programming follow much of the same vocabulary (like "vectorization",
+"array", "axis", "attribute", "broadcast", and "boolean slicing" among others).
+
+
 (processor)=
 ## Coffea processor
 
@@ -52,6 +78,8 @@ runner = processor.Runner(
 
 result = runner(
     fileset,
+    # we haven't defined `my_processor` yet
+    # that is where all your fancy analysis goes!
     processor_instance=my_processor,
     treename="Events",
 )
