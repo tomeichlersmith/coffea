@@ -22,6 +22,8 @@ __all__ = [
     "NminusOne",
     "Cutflow",
     "PackedSelection",
+    "CutflowResult",
+    "ExtendedCutflowResult",
 ]
 
 # rich colors for console output
@@ -1437,6 +1439,68 @@ class NminusOne:
             return hists, labels
 
 
+class CutflowResult(
+    namedtuple(
+        "CutflowResult",
+        ["labels", "nevonecut", "nevcutflow", "masksonecut", "maskscutflow"],
+    )
+):
+    """namedtuple returned by :py:func:`Cutflow.result`
+
+    Attributes
+    ----------
+        nevonecut : list of int or dask_awkward.lib.core.Scalar
+            The number of events that survive each cut alone as a list of integers or delayed integers
+        nevcutflow : list of int or dask_awkward.lib.core.Scalar
+            The number of events that survive the cumulative cutflow as a list of integers or delayed integers
+        masksonecut : list of bool numpy.ndarray or dask_awkward.lib.core.Array
+            The boolean mask vectors of which events pass each cut alone as a list of materialized or delayed boolean arrays
+        maskscutflow : list of bool numpy.ndarray or dask_awkward.lib.core.Array
+            The boolean mask vectors of which events pass the cumulative cutflow a list of materialized or delayed boolean arrays
+    """
+
+    pass
+
+
+class ExtendedCutflowResult(
+    namedtuple(
+        "ExtendedCutflowResult",
+        [
+            "labels",
+            "nevonecut",
+            "nevcutflow",
+            "masksonecut",
+            "maskscutflow",
+            "commonmask",
+            "wgtevonecut",
+            "wgtevcutflow",
+            "weights",
+            "weightsmodifier",
+        ],
+    )
+):
+    """named tuple returned by :py:func:`Cutflow.result`
+
+    This result named tuple has the same attributes as `CutflowResult` and
+    the ones listed below.
+
+    Attributes
+    ----------
+    commonmask : boolean numpy.ndarray or dask_awkward.lib.core.Array object, or None if no common mask was provided
+        The eventwise mask for the for the cutflow.
+    wgtevonecut : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
+        The weighted number of events that survive each cut alone as a list of floats or delayed floats
+    wgtevcutflow : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
+        The weighted number of events that survive the cumulative cutflow as a list of floats or delayed floats
+    weights : float numpy.ndarray or dask_awkward.lib.core.Array object, or None if no weights were provided
+        The Weights.weight(modifier) array provided as input. Must be masked by masksonecut or maskscutflow to get the corresponding weights
+    weightsmodifier : str or None
+        The modifier passed to Weights.weight([modifier]) if weights were provided
+    """
+
+    pass
+
+
 class Cutflow:
     """Object to be returned by PackedSelection.cutflow()"""
 
@@ -1482,59 +1546,10 @@ class Cutflow:
 
         Returns
         -------
-            result : CutflowResult
-                A namedtuple with the following attributes:
-
-                nevonecut : list of integers or dask_awkward.lib.core.Scalar objects
-                    The number of events that survive each cut alone as a list of integers or delayed integers
-                nevcutflow : list of integers or dask_awkward.lib.core.Scalar objects
-                    The number of events that survive the cumulative cutflow as a list of integers or delayed integers
-                masksonecut : list of boolean numpy.ndarray or dask_awkward.lib.core.Array objects
-                    The boolean mask vectors of which events pass each cut alone as a list of materialized or delayed boolean arrays
-                maskscutflow : list of boolean numpy.ndarray or dask_awkward.lib.core.Array objects
-                    The boolean mask vectors of which events pass the cumulative cutflow a list of materialized or delayed boolean arrays
-
-            result : ExtendedCutflowResult
-                A namedtuple with the CutflowResult properties and additionally the following:
-
-                commonmask : boolean numpy.ndarray or dask_awkward.lib.core.Array object, or None if no common mask was provided
-                    The eventwise mask for the for the cutflow.
-                wgtevonecut : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
-                    The weighted number of events that survive each cut alone as a list of floats or delayed floats
-                wgtevcutflow : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
-                    The weighted number of events that survive the cumulative cutflow as a list of floats or delayed floats
-                weights : float numpy.ndarray or dask_awkward.lib.core.Array object, or None if no weights were provided
-                    The Weights.weight(modifier) array provided as input. Must be masked by masksonecut or maskscutflow to get the corresponding weights
-                weightsmodifier : str or None
-                    The modifier passed to Weights.weight([modifier]) if weights were provided
-
+        CutflowResult or ExtendendCutflowResult
+            The `ExtendedCutflowResult` is returned if weights or a common mask is used.
         """
         _include_weights = self._weighted if includeweights is None else includeweights
-        CutflowResult = namedtuple(
-            "CutflowResult",
-            [
-                "labels",
-                "nevonecut",
-                "nevcutflow",
-                "masksonecut",
-                "maskscutflow",
-            ],
-        )
-        ExtendedCutflowResult = namedtuple(
-            "ExtendedCutflowResult",
-            [
-                "labels",
-                "nevonecut",
-                "nevcutflow",
-                "masksonecut",
-                "maskscutflow",
-                "commonmask",
-                "wgtevonecut",
-                "wgtevcutflow",
-                "weights",
-                "weightsmodifier",
-            ],
-        )
         labels = ["initial"] + list(self._names)
         if self._weighted or self._commonmasked:
             return ExtendedCutflowResult(
