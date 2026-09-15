@@ -22,8 +22,6 @@ __all__ = [
     "NminusOne",
     "Cutflow",
     "PackedSelection",
-    "CutflowResult",
-    "ExtendedCutflowResult",
 ]
 
 # rich colors for console output
@@ -1138,12 +1136,15 @@ class NminusOne:
             weighted : bool, optional
                 Whether to fill the histograms with weights. Default is None, which applies the weights
                 if the nminusone was instantiated with weights and unweighted statistics otherwise.
-            categorical : dict or None, optional
-                A dictionary with the following keys with three keys defining the categorical histogram.
+            categorical : dict, optional
+                A dictionary with the following keys:
 
-                * ``"axis"`` is a `hist.axis` to be used as the categorical axis
-                * ``"values"`` is a `list` that is to be filled in the categorical axis and must be the same length the masks
-                * ``"labels"`` is a `list` of `str` corresponding to the values in the categorical axis.
+                    axis : hist.axis object
+                        The axis to be used as a categorical axis
+                    values : list
+                        The array to be filled in the categorical axis, must be the same length as the masks
+                    labels : list
+                        The labels corresponding to the values in the categorical axis
 
                 Default is None, which does not apply any categorical axis.
 
@@ -1269,22 +1270,22 @@ class NminusOne:
                 A dictionary in the form ``{name: array}`` where ``name`` is the name of the variable,
                 and ``array`` is the corresponding array of values.
                 The arrays must be the same length as each mask of the N-1 selection.
-            axes : list of hist.axis, optional
+            axes : list of hist.axis objects, optional
                 The axes objects to histogram the variables on. This will override all the following arguments that define axes.
                 Must be the same length as ``vars``.
-            bins : list of int or None, optional
+            bins : iterable of integers or Nones, optional
                 The number of bins for each variable histogram. If not specified, it defaults to 20.
                 Must be the same length as ``vars``.
-            start : list of float or int or None, optional
+            start : iterable of floats or integers or Nones, optional
                 The lower edge of the first bin for each variable histogram. If not specified, it defaults to the minimum value of the variable array.
                 Must be the same length as ``vars``.
-            stop : list of float or int or None, optional
+            stop : iterable of floats or integers or Nones, optional
                 The upper edge of the last bin for each variable histogram. If not specified, it defaults to the maximum value of the variable array.
                 Must be the same length as ``vars``.
-            edges : list of list of float or int, optional
+            edges : list of iterables of floats or integers, optional
                 The bin edges for each variable histogram. This overrides ``bins``, ``start``, and ``stop`` if specified.
                 Must be the same length as ``vars``.
-            transform : list of hist.axis.transform or None, optional
+            transform : iterable of hist.axis.transform objects or Nones, optional
                 The transforms to apply to each variable histogram axis. If not specified, it defaults to None.
                 Must be the same length as ``vars``.
             weighted : bool, optional
@@ -1292,25 +1293,27 @@ class NminusOne:
                 if the nminusone was instantiated with weights and unweighted distributions otherwise.
             scale : float, optional
                 A scalar value by which all weights will be scaled, works with both weighted and unweighted methods.
-            categorical : dict or None, optional
-                A dictionary with the following keys with three keys defining the categorical histogram.
+            categorical : dict, optional
+                A dictionary with the following keys:
 
-                * ``"axis"`` is a `hist.axis` to be used as the categorical axis
-                * ``"values"`` is a `list` that is to be filled in the categorical axis and must be the same length the masks
-                * ``"labels"`` is a `list` of `str` corresponding to the values in the categorical axis.
+                    axis : hist.axis object
+                        The axis to be used as a categorical axis
+                    values : list
+                        The array to be filled in the categorical axis, must be the same length as the masks
+                    labels : list
+                        The labels corresponding to the values in the categorical axis
 
                 Default is None, which does not apply any categorical axis.
 
         Returns
         -------
-            hists : list of hist.Hist or hist.dask.Hist
+            hists : list of hist.Hist or hist.dask.Hist objects
                 A list of 2D histograms of the variables for each step of the N-1 selection.
                 The first axis is the variable, the second axis is the N-1 selection step.
-            labels : list of str
+            labels : list of strings
                 The bin labels of y axis of the histogram.
-            catlabels : list of str, optional
+            catlabels : list of strings, optional
                 The labels of the categorical axis
-                Only included if using axis defined with ``categorical`` input
         """
         do_weighted = self._weighted if weighted is None else weighted
         do_categorical = categorical is not None
@@ -1439,68 +1442,6 @@ class NminusOne:
             return hists, labels
 
 
-class CutflowResult(
-    namedtuple(
-        "CutflowResult",
-        ["labels", "nevonecut", "nevcutflow", "masksonecut", "maskscutflow"],
-    )
-):
-    """namedtuple returned by :py:func:`Cutflow.result`
-
-    Attributes
-    ----------
-        nevonecut : list of int or dask_awkward.lib.core.Scalar
-            The number of events that survive each cut alone as a list of integers or delayed integers
-        nevcutflow : list of int or dask_awkward.lib.core.Scalar
-            The number of events that survive the cumulative cutflow as a list of integers or delayed integers
-        masksonecut : list of bool numpy.ndarray or dask_awkward.lib.core.Array
-            The boolean mask vectors of which events pass each cut alone as a list of materialized or delayed boolean arrays
-        maskscutflow : list of bool numpy.ndarray or dask_awkward.lib.core.Array
-            The boolean mask vectors of which events pass the cumulative cutflow a list of materialized or delayed boolean arrays
-    """
-
-    pass
-
-
-class ExtendedCutflowResult(
-    namedtuple(
-        "ExtendedCutflowResult",
-        [
-            "labels",
-            "nevonecut",
-            "nevcutflow",
-            "masksonecut",
-            "maskscutflow",
-            "commonmask",
-            "wgtevonecut",
-            "wgtevcutflow",
-            "weights",
-            "weightsmodifier",
-        ],
-    )
-):
-    """named tuple returned by :py:func:`Cutflow.result`
-
-    This result named tuple has the same attributes as `CutflowResult` and
-    the ones listed below.
-
-    Attributes
-    ----------
-    commonmask : boolean numpy.ndarray or dask_awkward.lib.core.Array object, or None if no common mask was provided
-        The eventwise mask for the for the cutflow.
-    wgtevonecut : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
-        The weighted number of events that survive each cut alone as a list of floats or delayed floats
-    wgtevcutflow : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
-        The weighted number of events that survive the cumulative cutflow as a list of floats or delayed floats
-    weights : float numpy.ndarray or dask_awkward.lib.core.Array object, or None if no weights were provided
-        The Weights.weight(modifier) array provided as input. Must be masked by masksonecut or maskscutflow to get the corresponding weights
-    weightsmodifier : str or None
-        The modifier passed to Weights.weight([modifier]) if weights were provided
-    """
-
-    pass
-
-
 class Cutflow:
     """Object to be returned by PackedSelection.cutflow()"""
 
@@ -1546,10 +1487,59 @@ class Cutflow:
 
         Returns
         -------
-        CutflowResult or ExtendendCutflowResult
-            The `ExtendedCutflowResult` is returned if weights or a common mask is used.
+            result : CutflowResult
+                A namedtuple with the following attributes:
+
+                nevonecut : list of integers or dask_awkward.lib.core.Scalar objects
+                    The number of events that survive each cut alone as a list of integers or delayed integers
+                nevcutflow : list of integers or dask_awkward.lib.core.Scalar objects
+                    The number of events that survive the cumulative cutflow as a list of integers or delayed integers
+                masksonecut : list of boolean numpy.ndarray or dask_awkward.lib.core.Array objects
+                    The boolean mask vectors of which events pass each cut alone as a list of materialized or delayed boolean arrays
+                maskscutflow : list of boolean numpy.ndarray or dask_awkward.lib.core.Array objects
+                    The boolean mask vectors of which events pass the cumulative cutflow a list of materialized or delayed boolean arrays
+
+            result : ExtendedCutflowResult
+                A namedtuple with the CutflowResult properties and additionally the following:
+
+                commonmask : boolean numpy.ndarray or dask_awkward.lib.core.Array object, or None if no common mask was provided
+                    The eventwise mask for the for the cutflow.
+                wgtevonecut : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
+                    The weighted number of events that survive each cut alone as a list of floats or delayed floats
+                wgtevcutflow : list of floats or dask_awkward.lib.core.Scalar objects, or None if no weights were provided
+                    The weighted number of events that survive the cumulative cutflow as a list of floats or delayed floats
+                weights : float numpy.ndarray or dask_awkward.lib.core.Array object, or None if no weights were provided
+                    The Weights.weight(modifier) array provided as input. Must be masked by masksonecut or maskscutflow to get the corresponding weights
+                weightsmodifier : str or None
+                    The modifier passed to Weights.weight([modifier]) if weights were provided
+
         """
         _include_weights = self._weighted if includeweights is None else includeweights
+        CutflowResult = namedtuple(
+            "CutflowResult",
+            [
+                "labels",
+                "nevonecut",
+                "nevcutflow",
+                "masksonecut",
+                "maskscutflow",
+            ],
+        )
+        ExtendedCutflowResult = namedtuple(
+            "ExtendedCutflowResult",
+            [
+                "labels",
+                "nevonecut",
+                "nevcutflow",
+                "masksonecut",
+                "maskscutflow",
+                "commonmask",
+                "wgtevonecut",
+                "wgtevcutflow",
+                "weights",
+                "weightsmodifier",
+            ],
+        )
         labels = ["initial"] + list(self._names)
         if self._weighted or self._commonmasked:
             return ExtendedCutflowResult(

@@ -17,8 +17,6 @@ from coffea.util import _import_distributed, coffea_console
 from . import rucio_utils
 from .preprocess import preprocess
 
-__all__ = ["print_dataset_query", "get_indices_query", "DataDiscoveryCLI"]
-
 
 def print_dataset_query(
     query: str,
@@ -273,7 +271,7 @@ Some basic commands:
             selection : str or None, default None
                 Space-delimited indices corresponding to selected datasets. Can include
                 ranges (like ``"4-6"``) or the literal ``"all"``.
-            metadata : dict or None, default None
+            metadata : dict[Hashable, Any] or None, default None
                 Metadata to store in associated with selected datasets.
         """
         if not self.last_query_list:
@@ -492,7 +490,7 @@ Some basic commands:
 
         Parameters
         ----------
-            sites : list of str or None, default None
+            sites : list[str] or None, default None
                 The sites to allow the replicas query to look at. If passing in a list,
                 elements of the list are sites. If passing in None, the prompt requires
                 a single string containing a comma-separated listing.
@@ -515,7 +513,7 @@ Some basic commands:
 
         Parameters
         ----------
-            sites : list of str or None, default None
+            sites : list[str] or None, default None
                 The sites to prevent the replicas query from looking at. If passing in a
                 list elements of the list are sites. If passing in None, the prompt
                 requires a single string containing a comma-separated listing.
@@ -649,14 +647,14 @@ Some basic commands:
                 Chunk size (number of events) to process per step.
             align_to_clusters : bool or None, default None
                 Whether to align step boundaries to ROOT cluster boundaries. Mirrors the
-                ``align_clusters`` argument of :py:func:`coffea.dataset_tools.preprocess`.
+                ``align_clusters`` argument of ``coffea.dataset_tools.preprocess``.
             scheduler_url : str or None, default None
                 Dask scheduler URL on which to run preprocessing.
             recalculate_steps : bool or None, default None
                 Recompute step definitions even if cached values are present.
             files_per_batch : int or None, default None
                 Number of files to send to each preprocessing task.
-            file_exceptions : tuple of BaseException, default OSError
+            file_exceptions : tuple[type[BaseException], ...], default (OSError,)
                 Exceptions that should trigger file skipping instead of aborting.
             save_form : bool or None, default None
                 Persist the Awkward form extracted during preprocessing alongside the
@@ -732,7 +730,7 @@ Some basic commands:
 
         Parameters
         ----------
-            dataset_definition : dict of str to dict
+            dataset_definition : dict[str, dict[Hashable, Any]]
                 Mapping from dataset query string to metadata to attach to the selection.
             query_results_strategy : str, default "all"
                 How to decide which datasets to select. If "manual", user will be prompted
@@ -746,7 +744,7 @@ Some basic commands:
 
         Returns
         -------
-            out_replicas : dict
+            out_replicas : FilesetSpecOptional
                 An uproot-readable fileset. At this point, the fileset is not fully
                 preprocessed, but this can be done with do_preprocess().
         """
