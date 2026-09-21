@@ -29,6 +29,9 @@ All [local executors](./concepts.md#local-executors) are tested against all thre
 however the [distributed executors](./concepts.md#distributed-executors) are not routinely tested on Windows.
 
 Coffea starts from v0.5.0 in the PyPI repository since before v0.5.0 it was hosted as [fnal-column-analysis-tools](https://pypi.org/project/fnal-column-analysis-tools/). If you are still using fnal-column-analysis-tools, please move to [coffea](https://pypi.org/project/coffea/)!
+In _Month Year_, Coffea moved to calendar versioning with the last semantic version being v0.7.
+If you are still using the last semantic version, please move to a more recent calendar version since
+we will stop backporting features and patches to v0.7 soon.
 
 ## Install coffea
 
@@ -36,7 +39,7 @@ To install coffea, there are several mostly-equivalent options:
 
    - install coffea system-wide using `pip install coffea`;
    - if you do not have administrator permissions, install as local user with `pip install --user coffea`;
-   - if you prefer to not place coffea in your global environment, you can set up a `Virtual environment`;
+   - if you prefer to not place coffea in your global environment, you can set up a [virtual environment](#virtual-environment)
    - if you use [Conda](https://docs.conda.io/projects/conda/en/latest/index.html), simply `conda install coffea`;
    - or, if you like to use containers, see [pre-built images](#pre-built-images) below.
 
@@ -59,10 +62,11 @@ The necessary dependencies can be installed easily via ``pip`` using the setupto
 
 Multiple extras can be installed together via, e.g. `pip install coffea[dask,dask-awkward,parsl]`
 
+(virtual-environment)=
 ## Virtual environment
 
 Virtual environments are a good way to isolate python environments, and ensure no hidden dependencies.
-You can find more information at https://docs.python.org/3/library/venv.html
+You can find more information at [`venv`](https://docs.python.org/3/library/venv.html)
 
 ```bash
 python -m venv my_env

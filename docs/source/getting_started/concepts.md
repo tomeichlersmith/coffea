@@ -56,8 +56,8 @@ of this array programming follow much of the same vocabulary (like "vectorizatio
 
 In almost all HEP analyses, each row corresponds to an independent event, and it is exceptionally rare
 to need to compute inter-row derived quantities. This makes horizontal scale-out straightforward: each chunk of rows can be processed independently.
-Coffea wraps this pattern with the {class}`coffea.processor.ProcessorABC`, which defines a `process` method returning an accumulator.
-The {class}`coffea.processor.Runner` helper bundles the dataset chunking, NanoEvents creation, and reduction of per-chunk results so that you can focus on analysis code.
+Coffea wraps this pattern with the {class}`~coffea.processor.ProcessorABC`, which defines a `process` method returning an accumulator.
+The {class}`~coffea.processor.Runner` bundles the dataset chunking, event data loading, and reduction of per-chunk results so that you can focus on analysis code.
 
 A processor instance can be executed with the same interface regardless of the executor in use:
 
@@ -65,7 +65,7 @@ A processor instance can be executed with the same interface regardless of the e
 from coffea import processor
 from coffea.nanoevents import NanoAODSchema
 
-# Assume ``my_processor`` is an instance of a subclass of ProcessorABC.
+# Assume my_processor is an instance of a subclass of ProcessorABC.
 fileset = {
     "ZJets": {"treename": "Events", "files": ["/data/nano_dy.root"]},
     "Data": {"treename": "Events", "files": ["/data/nano_dimuon.root"]},
@@ -78,7 +78,7 @@ runner = processor.Runner(
 
 result = runner(
     fileset,
-    # we haven't defined `my_processor` yet
+    # we haven't defined my_processor yet
     # that is where all your fancy analysis goes!
     processor_instance=my_processor,
     treename="Events",
@@ -93,15 +93,25 @@ Changing the executor is all that is required to scale from a laptop to a cluste
 Often, the computation requirements of a HEP data analysis exceed the resources of a single thread of execution.
 To facilitate parallelization and allow the user to access more compute resources, coffea ships several executors
 that all implement the same interface. The local options cover quick iteration and debugging, while the distributed
-options connect to clusters and grid-style resources. Switching between them does not require changes to the processor itself.
+options connect to clusters and grid-style resources.
+Switching between them does not (in principle) require changes to the processor itself.
+
+```{caution}
+While a functional analysis will not require re-writing when scaling out,
+oftentimes scaling out introduces rare events that break the logic of the analysis
+and were not present in the smaller testing data used locally during development.
+
+In the worst case, the specific error message is lost since the executors are juggling so
+many different tasks, making it appear unrelated to your analysis code.
+```
 
 (#local-executors)=
 ### Local executors
 
 Coffea provides two executors for running on a single machine:
 
-- `IterativeExecutor`: processes chunks sequentially in one Python thread. This is ideal for debugging and validation because it has the least moving parts.
-- `FuturesExecutor`: uses `concurrent.futures` to fan out work to multiple local workers. By default it creates a process pool, and you can pass `pool` or `workers` to fine-tune the level of parallelism.
+- {class}`~coffea.processor.IterativeExecutor`: processes chunks sequentially in one Python thread. This is ideal for debugging and validation because it has the least moving parts.
+- {class}`~coffea.processor.FuturesExecutor`: uses `concurrent.futures` to fan out work to multiple local workers. By default it creates a process pool, and you can pass `pool` or `workers` to fine-tune the level of parallelism.
 
 You can swap between these executors by adjusting the `executor` argument passed to {class}`~coffea.processor.Runner`.
 
@@ -114,4 +124,4 @@ Coffea supports three distributed schedulers out of the box:
 - {class}`~coffea.processor.ParslExecutor` uses [Parsl](https://parsl-project.org/) to target a wide range of HPC and batch backends.
 - {class}`~coffea.processor.TaskVineExecutor` leverages [TaskVine](https://cctools.readthedocs.io/en/latest/taskvine/) for opportunistic and heterogeneous workers.
 
-Each executor shares the same `Runner` interface, making it easy to start locally and later connect to a remote resource manager.
+Each executor shares the same interface, making it easy to start locally and later connect to a remote resource manager.
