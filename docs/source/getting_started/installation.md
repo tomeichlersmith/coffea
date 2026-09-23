@@ -36,9 +36,9 @@ To update a previously installed coffea to a newer version, use: `pip install --
 Although not required, it is recommended to also [install Jupyter](https://jupyter.org/install), as it provides a more interactive development environment.
 The installation procedure is essentially identical as above: `pip install jupyter`. (If you use conda, `conda install jupyter` is a better option.)
 
-```{note}
+:::{note}
 In rare cases, you may find that the `pip` executable in your path does not correspond to the same python installation as the `python` executable. This is a sign of a broken python environment. However, this can be bypassed by using the syntax `python -m pip ...` in place of `pip ...`.
-```
+:::
 
 ### Optional dependencies
 
@@ -112,19 +112,22 @@ For a complete list of all available images, visit [DockerHub](https://hub.docke
 Containers are a general purpose technology and they have many features.
 We are just using them to help isolate the Coffea running environment from the system installation of Python and other Python packages.
 
-```{tip}
+:::{tip}
 The following commands are long and arduous to type out.
 You may find [``denv``](https://tomeichlersmith.github.io/denv/) to be a helpful program to install on both your
 personal computer and on the cluster(s) you work on in order to handle
 the switch between docker/podman/apptainer for you.
 
 On both your personal computer and a remote cluster, you would choose an image
-`denv init coffeateam/coffea-dask-almalinux9:latest`
-and then run from within this image
-`denv python my-analysis.py`
-with the image choice being stored in a local configuration file.
-
 ```
+denv init coffeateam/coffea-dask-almalinux9:latest
+```
+and then run from within this image
+```
+denv python my-analysis.py
+```
+with the image choice being stored in a local configuration file.
+:::
 
 Remember, I am just using ``coffeateam/coffea-dask-almalinux9:latest`` as an example.
 It is a good default to use, but you should consider using a different image if you want to
@@ -137,9 +140,9 @@ docker run -it --rm --name coffea-container coffeateam/coffea-dask-almalinux9:la
 # replace `docker` with `podman` if you installed podman
 ```
 
-```{note}
+:::{note}
 This command should be run from _within_ WSL if you are using Windoze.
-```
+:::
 
 ### Apptainer (formerly Singularity)
 For the following, I will use the newer name ``apptainer`` but these features will function with the old name ``singularity``.
@@ -152,12 +155,12 @@ apptainer shell -B ${PWD}:/work \
 ```
 Only the stuff after ``coffeateam`` needs to change if you are using a different image.
 
-```{warning}
+:::{warning}
 The ``latest`` image tag on CVMFS automatically updates when there is a new release, but
 this is different from the behavior when using Docker/Podman (or downloading the image
 yourself below) where the image is only downloaded if it doesn't already exist (or if you
 manually call the ``pull`` command).
-```
+:::
 
 If your cluster does not have CVFMS enables or the `unpacked.cern.ch` CVMFS repository mounted,
 you can still run the image, you will just need to download a copy of it yourself.
@@ -190,14 +193,14 @@ but the number of coffea dependencies makes the installation rather large, up to
 If we start from one of the images in `/cvmfs/unpacked.cern.ch/` from the [pre-built images](#pre-built-images) section, we don't have to install nearly as much
 software in our virtual environment, letting the container image take care of the majority of the codebase.
 
-```{tip}
+:::{tip}
 Consider if your extra packages need to be included in the environment that is run within the batch jobs.
 For example, while `matplotlib` is helpful for creating plots from a set of histograms, you could leave
 that out of your batch environment to keep it smaller.
 
 In many cases, you will not even need to include additional packages outside of the pre-built image
 for the batch jobs. In these cases, you do not need to copy an environment.
-```
+:::
 
 For example, the following code starts from the `coffea-dask-almalinux8` image
 and adds a special python module that is not included in the base image:
@@ -234,9 +237,9 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc9-opt/setup.
 pip install --user coffea
 ```
 
-```{danger}
+:::{danger}
 This method can be fragile, since the LCG-distributed packages may conflict with the coffea dependencies. In general it is better to define your own environment or use an image.
-```
+:::
 
 There are not many locations to edit to make a venv portable, and some sed hacks can save the day.
 Here is an example of a bash script that installs coffea on top of the LCG 98python3 software stack inside a portable virtual environment,
