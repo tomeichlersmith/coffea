@@ -100,7 +100,11 @@ Processing 100% ━━━━━━━━━━━━━━━━━━━━━�
 <details>
     <summary>Plotting Code</summary>
 
-:::{literalinclude} eg/plot-nmuons.py
+I ran this with `python3 plot.py h_nmuons`.
+
+:::{literalinclude} eg/plot.py
+:caption: plot.py
+:lineno-match:
 :::
 
 </details>
