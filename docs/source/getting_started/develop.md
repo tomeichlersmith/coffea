@@ -78,6 +78,9 @@ In conclusion, we can successfully process events and our `run-local.py` script 
 ## 1. Count Muons
 The main ingredient in our reconstruction of the mass peak is a pair of muons,
 so let's start simple and just count the number of muons in the event.
+We use {any}`ak.num` to count the number of `Muon` objects in each of the events.
+There are many other helper functions available from `awkward` and `numpy` that
+are tools in your toolbox when designing your analysis.
 
 :::{literalinclude} eg/1-dimuonmass.py
 :caption: dimuonmass.py
@@ -91,78 +94,45 @@ Processing 100% ━━━━━━━━━━━━━━━━━━━━━�
 {'bytesread': 187230, 'columns': ['nMuon-offsets'], 'entries': 80, 'processtime': 0.022721052169799805, 'chunks': 2}
 {'DYJets': {'h_nmuons': Hist(Integer(0, 10, name='nmuons'), storage=Double()) # Sum: 40.0, 'events': 40}, 'Data': {'h_nmuons': Hist(Integer(0, 10, name='nmuons'), storage=Double()) # Sum: 40.0, 'events': 40}}
 ```
-- We used {any}`ak.num` to count the number of `Muon` objects in each of the events. There are many other helper functions available from `awkward` and `numpy` that are tools in your toolbox when designing your analysis.
-- You could use {any}`hist.axis.StrCategory` instead of putting `h_nmuons` inside the sub-dictionary.
-  The goal is to keep the separate datasets distinct and these two methods are equivalent.
-- The number of `bytesread` and `columns` have increased according to the fact that we have
-  now accessed some data from the input files.
+Notice that the number of `bytesread` and `columns` have increased according to the fact that we have
+now accessed some data from the input files.
 
-<details>
-    <summary>Plotting Code</summary>
+You could use {any}`hist.axis.StrCategory` instead of putting `h_nmuons` inside the sub-dictionary.
+The goal is to keep the separate datasets distinct and these two methods are equivalent.
 
-I ran this with `python3 plot.py h_nmuons`.
+:::{admonition} Using `StrCategory`
+:class: tip, dropdown
 
-:::{literalinclude} eg/plot.py
-:caption: plot.py
-:lineno-match:
+Instead of keeping a 1D histogram in separate dictionaries indexed by `dataset`,
+this entails keeping 2D histograms where one of the axes is the `dataset`.
+
+The last few lines of the `process` method would look like
+```python
+h_nmuons = hist.Hist.new.StrCategory([],growth=True,name="dataset").Integer(0, 10, name="nmuons", label="N Muons").Double()
+h_nmuons.fill(dataset = dataset, nmuons = ak.num(events.Muon))
+return { "h_nmuons": h_nmuons }
+```
 :::
 
-</details>
+:::{admonition} Plotting Code
+:class: note, dropdown
 
+I ran this with `python3 plot.py h_nmuons`.
+```{literalinclude} eg/plot.py
+:caption: plot.py
+:lineno-match:
+```
+:::
 
 :::{figure} eg/h_nmuons.png
 :alt: Image of Muon Count Histograms Separated by Dataset
 :figwidth: 500px
 :align: center
 
-The filled muon count histograms plot separately by dataset.
+The filled muon count histograms plotted separately by dataset.
 We should definitely be prepared for events that don't have exactly two muons!
 :::
 
----
-Below is a minimal processor that applies muon scale factors from `correctionlib` and produces a histogram.
+## 2. Try to Calculate Mass
 
-```python
-import awkward as ak
-import correctionlib
-import hist
-from coffea import processor
-
-
-class MuonProcessor(processor.ProcessorABC):
-    def __init__(self, sf_path: str):
-        self.corrections = correctionlib.CorrectionSet.from_file(sf_path)
-        self.muon_sf = self.corrections["muon_sf"]
-
-    def process(self, events):
-        dataset = events.metadata["dataset"]
-
-        # Create histogram with category axis
-        h_mass = hist.Hist.new.StrCat([], growth=True, name="dataset").Reg(
-            60, 60, 120, name="mass", label="mμμ [GeV]"
-        ).Weight()
-
-        # select OS dimuons
-        muons = events.Muon[events.Muon.tightId]
-        dimuons = ak.combinations(muons, 2, fields=["lead", "trail"])
-        dimuons = dimuons[dimuons.lead.charge != dimuons.trail.charge]
-
-        # correctionlib returns per-muon weights; take product per event
-        sf_lead = self.muon_sf.evaluate(dimuons.lead.eta, dimuons.lead.pt)
-        sf_trail = self.muon_sf.evaluate(dimuons.trail.eta, dimuons.trail.pt)
-        event_weight = sf_lead * sf_trail
-
-        mass = (dimuons.lead + dimuons.trail).mass
-        h_mass.fill(
-            dataset=dataset,
-            mass=mass,
-            weight=event_weight,
-        )
-
-        return {
-            dataset: {
-                "mass": h_mass,
-                "events": len(events),
-            }
-        }
-```
+## 3. Get Result
