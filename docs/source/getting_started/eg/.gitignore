@@ -6,3 +6,5 @@
 *.root
 # ignore the output histogram pickles
 *.coffea
+# ignore symlink author is using to choose development stage
+dimuonmass.py
