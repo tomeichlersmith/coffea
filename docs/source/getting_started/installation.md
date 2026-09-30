@@ -129,6 +129,9 @@ denv python my-analysis.py
 with the image choice being stored in a local configuration file.
 :::
 
+TODO: comment about ``vomx-proxy-init`` and how that needs to be done from within the container environment
+either when using ``denv`` or when using ``apptainer`` directly.
+
 Remember, I am just using ``coffeateam/coffea-dask-almalinux9:latest`` as an example.
 It is a good default to use, but you should consider using a different image if you want to
 pin to a specific Coffea/Python/AlmaLinux version.
