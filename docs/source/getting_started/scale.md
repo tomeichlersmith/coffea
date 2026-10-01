@@ -82,12 +82,20 @@ Merging (local)   0% ───────────────────�
 {'/DYtoLL_NoTau_CP5Plus_13p6TeV_amcatnloFXFX-pythia8/Run3Winter22NanoAOD-Pilot_122X_mcRun3_2021_realistic_v9-v2/NANOAODSIM': {'h_nmuons': Hist(Integer(0, 10, name='nmuons', label='N Muons'), storage=Double()) # Sum: 40192559.0 (40192574.0 with flow), 'h_mass': Hist(Regular(60, 60, 120, name='mass', label='m__ [GeV]'), storage=Double()) # Sum: 10022911.0 (12625272.0 with flow), 'events': 40192574}}
 ```
 
-The preprocessing step where the fileset is cut up into processing chunks took a significant amount of time (6.5 minutes). TODO link to docs on avoiding/caching preprocessing.
+And the output ``dimuonmass.coffea`` can be plotted in the same way as before!
+
+The preprocessing step where the fileset is cut up into processing chunks took a significant amount of time (6.5 minutes relative to 28min for the actual processing).
+<!-- TODO link to docs on avoiding/caching preprocessing. -->
+
+:::{admonition} I/O Bound
+:class: tip
 
 This is where I feel obligated to make an important point:
 a vast majority of analyses are limited in time not by the computer doing calculations but by loading data into memory (so-called "I/O Bound").
 Specifically, when viewing `htop -u ${USER}` while the above analysis was running, I observed classic I/O-bound-behavior where the sub-processes launched to do the analysis in parallel (`popen_loky_process` in this case) were mostly in the **S**uspended state and the CPU/Mem usage was "pulsing" instead of remaining high.
 This is important to keep in mind because your analysis will likely not speed up linearly with the number of parallel processes you use (in some situations, it might even slow down).
-TODO skimming user guide for shrinking data necessary for analyses
+<!-- TODO skimming user guide for shrinking data necessary for analyses -->
+:::
 
-You can follow the same pattern with  {class}`~coffea.processor.ParslExecutor` or {class}`~coffea.processor.TaskVineExecutor` depending on the scheduler available at the computing resources you are using.
+You can follow the same pattern with  {class}`~coffea.processor.ParslExecutor`, {class}`~coffea.processor.TaskVineExecutor`, or {class}`~coffea.processor.DaskExecutor` (via [``dask_jobqueue``](https://jobqueue.dask.org/en/latest/)) depending on the scheduler available at the computing resources you are using.
+If you are working on computing resources that does not already have an executor configuration available, I highly recommend developing one with a _simple_ analysis (e.g. just counting the number of events) in order to make sure all confusions are originating from the executor definition.
