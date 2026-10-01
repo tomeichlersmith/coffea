@@ -10,7 +10,7 @@ from coffea.util import save
 
 # input-sample.json is the fileset constructed
 # from coffea.dataset_tools.dataset_query
-with open('input-sample.json') as f:
+with open("input-sample.json") as f:
     fileset = json.load(f)
 
 # define how we are going to run the analysis over the data
