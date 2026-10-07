@@ -204,10 +204,11 @@ software in our virtual environment, letting the container image take care of th
 
 :::{tip}
 Consider if your extra packages need to be included in the environment that is run within the batch jobs.
-For example, while `matplotlib` is helpful for creating plots from a set of histograms, you could leave
-that out of your batch environment to keep it smaller.
+For example, while you may like using `zfit` to fit different models to the resulting histograms,
+the fitting package (and all its heavier dependencies) is not needed while the histograms are being filled.
+You can leave that out of your batch environment to keep it smaller.
 
-In many cases, you will not even need to include additional packages outside of the pre-built image
+In most cases, you will not even need to include additional packages outside of the pre-built image
 for the batch jobs. In these cases, you do not need to copy an environment.
 :::
 
