@@ -28,10 +28,12 @@ which has the infrastructure to run the analysis.
 
 Cool, let's see what happens when we run this.
 
-:::{note}
+:::{admonition} Technicality
+:class: note, dropdown
+
 I am technically running this example within the Coffea image for stability
 and then using [denv](https://tomeichlersmith.github.io/denv/) to shorten
-the contaier-running commands.
+the container-running commands.
 ```
 denv init coffeateam/coffea-dask-almalinux9:2026.9.0-py3.13
 ```
@@ -136,7 +138,7 @@ We should definitely be prepared for events that don't have exactly two muons!
 ## 2. Calculate Mass
 As mentioned before, the {any}`awkward` package provides many functions that do basic operations like
 counting (e.g. {any}`ak.num`), arithmetic (e.g. {any}`ak.sum`), and combinatorics (e.g. {any}`ak.combinations`).
-In order to recostruct the Z mass peak, we need two muons from the same event with opposite charge.
+In order to reconstruct the Z mass peak, we need two muons from the same event with opposite charge.
 With {any}`awkward`, we do this by first getting all pairs of muons using {any}`ak.combinations` and
 then selecting only those pairs that have opposite charges.
 
