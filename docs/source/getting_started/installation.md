@@ -112,26 +112,6 @@ For a complete list of all available images, visit [DockerHub](https://hub.docke
 Containers are a general purpose technology and they have many features.
 We are just using them to help isolate the Coffea running environment from the system installation of Python and other Python packages.
 
-:::{tip}
-The following commands are long and arduous to type out.
-You may find [``denv``](https://tomeichlersmith.github.io/denv/) to be a helpful program to install on both your
-personal computer and on the cluster(s) you work on in order to handle
-the switch between docker/podman/apptainer for you.
-
-On both your personal computer and a remote cluster, you would choose an image
-```
-denv init coffeateam/coffea-dask-almalinux9:latest
-```
-and then run from within this image
-```
-denv python my-analysis.py
-```
-with the image choice being stored in a local configuration file.
-:::
-
-TODO: comment about ``vomx-proxy-init`` and how that needs to be done from within the container environment
-either when using ``denv`` or when using ``apptainer`` directly.
-
 Remember, I am just using ``coffeateam/coffea-dask-almalinux9:latest`` as an example.
 It is a good default to use, but you should consider using a different image if you want to
 pin to a specific Coffea/Python/AlmaLinux version.
@@ -149,6 +129,32 @@ This command should be run from _within_ WSL if you are using Windoze.
 
 ### Apptainer (formerly Singularity)
 For the following, I will use the newer name ``apptainer`` but these features will function with the old name ``singularity``.
+
+:::{tip}
+You will need extra mounts from the host into the container environment
+in order to use a "Grid Certificate" to maintain access to large samples.
+
+The additional mounts are
+- `${HOME}`: where your certificates (probably under `~/.globus`) and proxy files (probably look like `~/x509<stuff>`) live
+- `/etc/grid-security`: extra configuration for the `voms-*` tools so they know how to connect to the authentication network
+
+You can add more mounts to `apptainer` after the `-B` flag (short for "bind mount)
+with a comma separate list.
+
+You need to `voms-proxy-init` _outside_ of the container and then these mounts let
+you share this initialized-proxy with the environment _inside_ the container.
+For example
+```
+$ voms-proxy-init --voms cms --rfc --valid 192:0
+$ voms-proxy-info
+# details of current proxy
+$ apptainer shell -B ${PWD},${HOME},/cvmfs/cms.cern.ch/etc/grid-security:/etc/grid-security \
+    /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux9:latest
+$ voms-proxy-info
+# returns same result as earlier except timeleft field
+```
+
+:::
 
 If your cluster has ``apptainer`` and the ``/cvmfs/unpacked.cern.ch`` directory mounted,
 then you can run the images that are already distributed via CVMFS (saving you time and disk space).
