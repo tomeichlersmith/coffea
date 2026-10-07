@@ -65,8 +65,8 @@ so I am just using {class}`~coffea.processor.FuturesExecutor` on one the interac
 and the output looks like
 
 ```
-  Preprocessing 100% ──────────────────────────────────────────────────── 180/180 [ 0:06:30 < 0:00:00 | 0.5   file/s ]
-Merging (local)   1% ────────────────────────────────────────────────────   1/180 [ 0:06:30 < -:--:-- | ?   merges/s ]
+  Preprocessing 100% ──────────────────────────────────────────────────── 180/180 [ 0:05:14 < 0:00:00 | 0.6   file/s ]
+Merging (local)   1% ────────────────────────────────────────────────────   1/180 [ 0:05:14 < -:--:-- | ?   merges/s ]
      Processing   0% ──────────────────────────────────────────────────────── 0/357 [ 0:00:08 < -:--:-- | ?  chunk/s ]
 Merging (local)   0% ────────────────────────────────────────────────────────   0/0 [ 0:00:08 < -:--:-- | ? merges/s ]
 /usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:297: RuntimeWarning: Missing cross-reference index for LowPtElectron_electronIdx => Electron
@@ -76,9 +76,9 @@ Merging (local)   0% ───────────────────�
 /usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:336: RuntimeWarning: Branch Photon_mass already exists but its values will be replaced with 0.0
   warnings.warn(
 /usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:336: RuntimeWarning: Branch Photon_charge already exists but its values will be replaced with 0.0
-     Processing 100% ──────────────────────────────────────────────────── 357/357 [ 0:27:59 < 0:00:00 | 0.3  chunk/s ]
-Merging (local)   0% ────────────────────────────────────────────────────   1/357 [ 0:27:59 < -:--:-- | ?   merges/s ]
-{'bytesread': 546564363, 'columns': ['Muon_eta-data', 'Muon_charge-data', 'Muon_phi-data', 'nMuon-offsets', 'Muon_mass-data', 'Muon_pt-data'], 'entries': 40192574, 'processtime': 1058.1506989002228, 'chunks': 357}
+     Processing 100% ──────────────────────────────────────────────────── 357/357 [ 0:24:42 < 0:00:00 | 0.3  chunk/s ]
+Merging (local)   0% ────────────────────────────────────────────────────   1/357 [ 0:24:42 < -:--:-- | ?   merges/s ]
+{'bytesread': 546564363, 'columns': ['Muon_mass-data', 'Muon_eta-data', 'Muon_pt-data', 'nMuon-offsets', 'Muon_charge-data', 'Muon_phi-data'], 'entries': 40192574, 'processtime': 952.8825426101685, 'chunks': 357}
 {'/DYtoLL_NoTau_CP5Plus_13p6TeV_amcatnloFXFX-pythia8/Run3Winter22NanoAOD-Pilot_122X_mcRun3_2021_realistic_v9-v2/NANOAODSIM': {'h_nmuons': Hist(Integer(0, 10, name='nmuons', label='N Muons'), storage=Double()) # Sum: 40192559.0 (40192574.0 with flow), 'h_mass': Hist(Regular(60, 60, 120, name='mass', label='m__ [GeV]'), storage=Double()) # Sum: 10022911.0 (12625272.0 with flow), 'events': 40192574}}
 ```
 
@@ -114,6 +114,56 @@ a vast majority of analyses are limited in time not by the computer doing calcul
 Specifically, when viewing `htop -u ${USER}` while the above analysis was running, I observed classic I/O-bound-behavior where the sub-processes launched to do the analysis in parallel (`popen_loky_process` in this case) were mostly in the **S**uspended state and the CPU/Mem usage was "pulsing" instead of remaining high.
 This is important to keep in mind because your analysis will likely not speed up linearly with the number of parallel processes you use (in some situations, it might even slow down).
 <!-- TODO skimming user guide for shrinking data necessary for analyses -->
+
+This behavior is exactly what happened for me in this example.
+I re-ran this analysis using {class}`~coffea.processor.IterativeExecutor` and the analysis took the same amount of time! (about 6 min for preprocessing and 25 min for the actual processing)
+
+There are many factors that can affect performance, so just be careful and remember that a process _definitely_
+completing after an hour is sometimes more helpful than the same process _maybe_ completing after twenty minutes.
+
+<details>
+<summary>Full Iterative Printout</summary>
+
+There are many caveats to this test.
+The overall point is that the time is about the same whereas we would naively expect the futures executor
+with access to eight cores to be eight times faster.
+
+```
+$ git diff futures.py
+diff --git a/docs/source/getting_started/eg/futures.py b/docs/source/getting_started/eg/futures.py
+index d7de09a8..ee87408d 100644
+--- a/docs/source/getting_started/eg/futures.py
++++ b/docs/source/getting_started/eg/futures.py
+@@ -15,8 +15,7 @@ with open("input-sample.json") as f:
+
+ # define how we are going to run the analysis over the data
+ runner = processor.Runner(
+-    # just use the 8 cores on this interactive node
+-    executor=processor.FuturesExecutor(),
++    executor=processor.IterativeExecutor(),
+     schema=NanoAODSchema,
+     savemetrics=True,
+ )
+$ ./run python3 futures.py
+Preprocessing 100% ──────────────────────────────────────────────────────── 180/180 [ 0:05:36 < 0:00:00 | 0.5 file/s ]
+/usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:297: RuntimeWarning: Missing
+cross-reference index for LowPtElectron_electronIdx => Electron
+  warnings.warn(
+/usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:297: RuntimeWarning: Missing
+cross-reference index for LowPtElectron_photonIdx => Photon
+  warnings.warn(
+/usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:336: RuntimeWarning: Branch Photon_mass
+already exists but its values will be replaced with 0.0
+  warnings.warn(
+/usr/local/lib/python3.13/site-packages/coffea/nanoevents/schemas/nanoaod.py:336: RuntimeWarning: Branch Photon_charge
+already exists but its values will be replaced with 0.0
+  warnings.warn(
+Processing 100% ────────────────────────────────────────────────────────── 357/357 [ 0:23:28 < 0:00:00 | 0.2 chunk/s ]
+{'bytesread': 546564363, 'columns': ['Muon_pt-data', 'Muon_charge-data', 'Muon_mass-data', 'Muon_eta-data', 'nMuon-offsets', 'Muon_phi-data'], 'entries': 40192574, 'processtime': 915.1277177333832, 'chunks': 357}
+{'/DYtoLL_NoTau_CP5Plus_13p6TeV_amcatnloFXFX-pythia8/Run3Winter22NanoAOD-Pilot_122X_mcRun3_2021_realistic_v9-v2/NANOAODSIM': {'h_nmuons': Hist(Integer(0, 10, name='nmuons', label='N Muons'), storage=Double()) # Sum: 40192559.0 (40192574.0 with flow), 'h_mass': Hist(Regular(60, 60, 120, name='mass', label='m__ [GeV]'), storage=Double()) # Sum: 10022911.0 (12625272.0 with flow), 'events': 40192574}}
+```
+
+</details>
 :::
 
 You can follow the same pattern with  {class}`~coffea.processor.ParslExecutor`, {class}`~coffea.processor.TaskVineExecutor`, or {class}`~coffea.processor.DaskExecutor` (via [``dask_jobqueue``](https://jobqueue.dask.org/en/latest/)) depending on the scheduler available at the computing resources you are using.
