@@ -25,7 +25,7 @@ extending array programming capabilities to the complexity of HEP data.
 :align: center
 :::
 
-### Array Broadcasting
+### Array Vectorization
 While in the "event loop" method for analyzing HEP data follows an "imperative" design pattern where
 you are expected to describe not only _what_ you want to do but also _how_ the computer should do it,
 array programming in the scientific python ecosystem has evolved into a more "declarative" design
@@ -96,14 +96,23 @@ that all implement the same interface. The local options cover quick iteration a
 options connect to clusters and grid-style resources.
 Switching between them does not (in principle) require changes to the processor itself.
 
-```{caution}
+:::{caution}
 While a functional analysis will not require re-writing when scaling out,
 oftentimes scaling out introduces rare events that break the logic of the analysis
 and were not present in the smaller testing data used locally during development.
 
 In the worst case, the specific error message is lost since the executors are juggling so
 many different tasks, making it appear unrelated to your analysis code.
+
+You can debug these situations by interactively loading that file or chunk and passing
+it to your processor manually.
+```python
+events = NanoEventsFactory.from_root(...)
+processor.process(events)
 ```
+This in-sync and interactive execution is much easier to debug than the asynchronous
+and non-interactive execution of large-scale processing.
+:::
 
 (#local-executors)=
 ### Local executors

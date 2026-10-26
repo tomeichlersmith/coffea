@@ -7,7 +7,7 @@ it is _not_ a helpful method for long-term analysis and scale out on clusters.
 ## Quick start
 
 Coffea is a python package distributed via [PyPI](https://pypi.org/project/coffea/).
-A python installation version 3.6 or newer is required to use coffea.
+A python installation version 3.10 or newer is required to use coffea.
 ```
 pip install coffea
 ```
